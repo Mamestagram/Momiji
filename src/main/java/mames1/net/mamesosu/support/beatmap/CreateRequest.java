@@ -89,7 +89,7 @@ public class CreateRequest extends ListenerAdapter {
                     e.replyEmbeds(Embed.getErrorEmbed(
                             "The beatmap you are trying to submit could not be found in the database.\n" +
                                     "You need to play the beatmap once on the server before submitting it!"
-                    ).build()).queue();
+                    ).build()).setEphemeral(true).queue();
                     return;
                 }
 
@@ -123,7 +123,7 @@ public class CreateRequest extends ListenerAdapter {
                     e.replyEmbeds(Embed.getErrorEmbed(
                             "There is an issue with the beatmap URL.\n" +
                                     "Please check the URL you entered!"
-                    ).build()).queue();
+                    ).build()).setEphemeral(true).queue();
                     return;
                 }
 
