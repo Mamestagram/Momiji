@@ -7,8 +7,10 @@ import mames1.net.mamesosu.object.Setting;
 import mames1.net.mamesosu.utils.ModalText;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
@@ -30,6 +32,27 @@ public class CreateRequest extends ListenerAdapter {
 
     final String OSU_REGEX = "beatmapsets/(\\d+)#(osu|taiko|fruits|mania)/(\\d+)";
     final String DISCORD_REGEX = "https://discord.com/channels/([0-9]+)/([0-9]+)";
+
+    @Override
+    public void onMessageReceived(MessageReceivedEvent e) {
+
+        Setting setting = new Setting();
+
+        if(!e.getChannelType().isGuild()) {
+            return;
+        }
+
+        if(!e.getAuthor().isBot()) {
+            return;
+        }
+
+        if(e.getChannel().getIdLong() == setting.getBnOsuChannelId() ||
+                e.getChannel().getIdLong() == setting.getBnTaikoChannelId() ||
+                e.getChannel().getIdLong() == setting.getBnCatchChannelId() ||
+                e.getChannel().getIdLong() == setting.getBnManiaChannelId()) {
+            e.getMessage().addReaction(Emoji.fromUnicode("U+2753")).queue();
+        }
+    }
 
     @Override
     public void onModalInteraction(ModalInteractionEvent e) {

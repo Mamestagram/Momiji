@@ -25,4 +25,14 @@ public abstract class Embed {
                 .setColor(Color.BLACK)
                 .setTimestamp(new Date().toInstant());
     }
+
+    public static EmbedBuilder getNominateNotifyEmbed(boolean ranked, String beatmap, String message, String nominator) {
+        return new EmbedBuilder()
+                .setDescription("**<:info:1285954858998042694> Your request has been " + (ranked ? "approved" : "rejected") + "!**")
+                .addField("**<:arrowup:1285855460510924882> Beatmap**", "* " + beatmap, false)
+                .addField("**<:question:1285854271857889291> Reason**", "* " + message, false)
+                .addField("<:peoplegroup:1285955898124140575> **Nominator**", "* " + beatmap, false)
+                .setColor(Color.BLACK)
+                .setTimestamp(new Date().toInstant());
+    }
 }
