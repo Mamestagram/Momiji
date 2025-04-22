@@ -89,20 +89,17 @@ public class CreateRequest extends ListenerAdapter {
             mode = matcher.group(2);
             beatmapSetID = Integer.parseInt(matcher.group(1));
             beatmapID = Integer.parseInt(matcher.group(3));
+            String column = e.getModalId().contains("all") ? "set_id" : "id";
 
             Role role = Objects.requireNonNull(e.getGuild()).getRoleById(bnData.get(mode).get(1));
 
             String button = e.getModalId().replace("all_", "").replace("diff_", "")
                     .replace("_form", "");
-
             try {
-                if (e.getModalId().contains("all")) {
-                    ps = connection.prepareStatement("select * from maps where set_id = ?");
-                    ps.setLong(1, beatmapSetID);
-                } else {
-                    ps = connection.prepareStatement("select * from maps where id = ? limit 1");
-                    ps.setLong(1, beatmapID);
-                }
+
+                ps = connection.prepareStatement("select * from maps where ? = ?");
+                ps.setString(1, column);
+                ps.setLong(2, e.getModalId().contains("all") ? beatmapSetID : beatmapID);
 
                 result = ps.executeQuery();
 
@@ -162,13 +159,9 @@ public class CreateRequest extends ListenerAdapter {
 
                     eb.setTitle("**<:mail:1285915444984680448> A new application has arrived!**");
 
-                    if (e.getModalId().contains("all")) {
-                        ps = connection.prepareStatement("select * from maps where set_id = ? order by diff");
-                        ps.setLong(1, beatmapSetID);
-                    } else {
-                        ps = connection.prepareStatement("select * from maps where id = ? limit 1");
-                        ps.setLong(1, beatmapID);
-                    }
+                    ps = connection.prepareStatement("select * from maps where ? = ?");
+                    ps.setString(1, column);
+                    ps.setLong(2, e.getModalId().contains("all") ? beatmapSetID : beatmapID);
 
                     result = ps.executeQuery();
 
