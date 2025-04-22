@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,6 +168,9 @@ public class Nominate extends ListenerAdapter {
                         }
                         i++;
                     }
+
+                    eb.addField("<:mail:1285915444984680448> **Comment** (" + Objects.requireNonNull(e.getMember()).getEffectiveName() + ")","* " + Objects.requireNonNull(e.getValue("note")).getAsString(), false);
+                    eb.setTimestamp(new Date().toInstant());
 
                     try {
                         URL ur = new URL("https://assets.ppy.sh/beatmaps/" + beatmapSetID + "/covers/cover.jpg?");
