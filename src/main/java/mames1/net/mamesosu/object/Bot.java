@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import lombok.Setter;
 import mames1.net.mamesosu.support.beatmap.CreateRequest;
+import mames1.net.mamesosu.support.beatmap.Nominate;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -47,7 +48,8 @@ public class Bot {
                         MemberCachePolicy.ALL
                 ).setChunkingFilter(
                         ChunkingFilter.ALL
-                ).addEventListeners(new CreateRequest()).
-                build();
+                ).addEventListeners(new CreateRequest())
+                .addEventListeners(new Nominate())
+                .build();
     }
 }

@@ -9,7 +9,7 @@ import java.net.URL;
 public abstract class RequestSender {
 
     // wip: サーバー側のリクエスト受け取る部分のセキュリティをあげる
-    private static void sendHttpRequest(String category, int id, int status)  {
+    public static void sendHttpRequest(String category, int id, int status)  {
 
         Setting setting = new Setting();
 

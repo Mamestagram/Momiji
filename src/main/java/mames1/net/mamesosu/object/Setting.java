@@ -11,6 +11,10 @@ public class Setting {
 
     String secretKey;
     String domain;
+    String beatmapMirror;
+
+    long rankedMapForumChannelId;
+    long rankedForumTagId;
 
     long bnOsuChannelId;
     long bnTaikoChannelId;
@@ -37,6 +41,8 @@ public class Setting {
 
         this.guildId = Long.parseLong(dotenv.get("GUILD_ID"));
 
+        this.beatmapMirror = dotenv.get("BEATMAP_MIRROR");
+
         this.bnOsuChannelId = Long.parseLong(dotenv.get("BN_OSU_CHANNEL_ID"));
         this.bnTaikoChannelId = Long.parseLong(dotenv.get("BN_TAIKO_CHANNEL_ID"));
         this.bnCatchChannelId = Long.parseLong(dotenv.get("BN_CATCH_CHANNEL_ID"));
@@ -45,5 +51,8 @@ public class Setting {
         this.bnTaikoRoleId = Long.parseLong(dotenv.get("BN_TAIKO_ROLE_ID"));
         this.bnCatchRoleId = Long.parseLong(dotenv.get("BN_CATCH_ROLE_ID"));
         this.bnManiaChannelId = Long.parseLong(dotenv.get("BN_MANIA_ROLE_ID"));
+
+        this.rankedMapForumChannelId = Long.parseLong(dotenv.get("RANKED_MAP_FORUM_CHANNEL_ID"));
+        this.rankedForumTagId = Long.parseLong(dotenv.get("RANKED_FORUM_TAG_ID"));
     }
 }
