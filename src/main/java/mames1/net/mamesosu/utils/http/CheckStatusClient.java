@@ -12,7 +12,7 @@ public abstract class CheckStatusClient {
     public static boolean checkStatus(String url) {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
-                .connectTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(5))
                 .build();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -25,7 +25,7 @@ public abstract class CheckStatusClient {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int status = response.statusCode();
-            return status < 400;
+            return status >= 200 && status < 300;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;

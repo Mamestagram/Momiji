@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.event;
+package mames1.net.mamesosu.listener;
 
 import mames1.net.mamesosu.server.monitor.ServerHealth;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
