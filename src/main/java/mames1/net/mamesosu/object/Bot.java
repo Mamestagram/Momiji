@@ -3,6 +3,7 @@ package mames1.net.mamesosu.object;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import mames1.net.mamesosu.constants.LogLevel;
+import mames1.net.mamesosu.event.BotReady;
 import mames1.net.mamesosu.utils.log.AppLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -45,7 +46,7 @@ public class Bot {
                 ).setChunkingFilter(
                         ChunkingFilter.ALL
                 ).addEventListeners(
-
+                    new BotReady()
                 ).build();
 
         AppLogger.log("Botを起動しました. トークンは: " + token, LogLevel.INFO);
