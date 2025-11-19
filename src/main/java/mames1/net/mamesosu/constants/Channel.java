@@ -2,6 +2,7 @@ package mames1.net.mamesosu.constants;
 
 import lombok.Getter;
 
+// 開発用に変更しているので本番環境では注意
 @Getter
 public enum Channel {
 

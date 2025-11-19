@@ -25,11 +25,11 @@ import java.util.Date;
 public class TopScoreMonitor extends ListenerAdapter {
 
     int latestSendTime = 0;
-    boolean isFirstRun = true;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
+        boolean isFirstRun;
         long latestId;
         TextChannel postChannel;
         Message latestMessage;
@@ -81,7 +81,6 @@ public class TopScoreMonitor extends ListenerAdapter {
 
         if(isFirstRun) {
             postChannel.sendMessageEmbeds(scoreEmbed.build()).queue();
-            isFirstRun = false;
 
             AppLogger.log("トップスコアを送信しました.", LogLevel.INFO);
             return;
