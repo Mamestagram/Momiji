@@ -1,4 +1,9 @@
 package mames1.net.mamesosu.server.monitor;
 
-public class ServerActivity {
+
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+public class ServerActivity extends ListenerAdapter {
+
+
 }
