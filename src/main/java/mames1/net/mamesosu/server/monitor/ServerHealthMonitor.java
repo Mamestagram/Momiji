@@ -8,10 +8,16 @@ import mames1.net.mamesosu.constants.ServerRole;
 import mames1.net.mamesosu.object.Bot;
 import mames1.net.mamesosu.utils.http.CheckStatusClient;
 import mames1.net.mamesosu.utils.log.AppLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.exceptions.ContextException;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
+import java.awt.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -55,16 +61,36 @@ public class ServerHealthMonitor {
                             continue;
                         }
 
+                        Guild guild = role.getGuild();
                         String name = channel.getName();
-                        List<Member> admins = role.getGuild().getMembers();
+
+                        List<Member> admins = guild.getMembersWithRoles(role);
 
                         if(isUp){
                             channel.getManager().setName(name.replace("Down", "Up")).queue();
                             continue;
                         }
 
+                        // サービスがダウンしている場合の処理
+                        EmbedBuilder notificationEmbed = new EmbedBuilder();
+
+                        notificationEmbed.setTitle("サービスが停止している可能性があります!");
+                        notificationEmbed.setDescription("この通知が間違いの場合は無視してください.");
+                        notificationEmbed.addField("**停止している可能性のあるエンドポイント**",
+                                endpoint, false);
+                        notificationEmbed.setColor(Color.RED);
+                        notificationEmbed.setTimestamp(new Date().toInstant());
+
                         for(Member member : admins){
-                            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(endpoint + "がダウンしています。メンテナンスの場合は無視してください。").queue());
+
+                            if(member.getUser().getId().equals(bot.getJda().getSelfUser().getId())){
+                                continue;
+                            }
+
+                                member.getUser().openPrivateChannel().queue(pc -> pc.sendMessageEmbeds(notificationEmbed.build()).queue(
+                                        success -> AppLogger.log("管理者 " + member.getUser().getAsTag() + " にDMで通知を送信しました.", LogLevel.INFO),
+                                        failure -> AppLogger.log("管理者 " + member.getUser().getAsTag() + " へのDM通知の送信に失敗しました: " + failure.getMessage(), LogLevel.INFO
+                                )));
                         }
 
                         channel.getManager().setName(name.replace("Up", "Down")).queue();
@@ -72,7 +98,7 @@ public class ServerHealthMonitor {
                         AppLogger.log(endpoint + " is Down!!", LogLevel.WARN);
                     }
                     } catch (Exception e) {
-                        AppLogger.log(e.getMessage(), LogLevel.ERROR);
+                        AppLogger.log("エラーが発生しました: " + e.getMessage(), LogLevel.ERROR);
                     }
                 },
                 0,

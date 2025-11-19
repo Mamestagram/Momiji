@@ -19,7 +19,7 @@ public class MySQL {
         Dotenv dotenv = Dotenv.configure().load();
         host = dotenv.get("HOST");
         port = Integer.parseInt(dotenv.get("PORT"));
-        user = dotenv.get("USER");
+        user = dotenv.get("DB_USER");
         password = dotenv.get("PASSWORD");
         name = dotenv.get("NAME");
     }
@@ -31,7 +31,7 @@ public class MySQL {
             AppLogger.log("MySQLに接続します...", LogLevel.INFO);
 
             return DriverManager.getConnection(
-                    "jdbc:mysql://" + host + "/" + name + "?autoReconnect=true",
+                    "jdbc:mysql://" + host + "/" + name + "?useSSL=false",
                     user,
                     password
             );

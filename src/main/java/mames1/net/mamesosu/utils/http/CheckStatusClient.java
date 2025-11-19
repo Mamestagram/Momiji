@@ -1,5 +1,7 @@
 package mames1.net.mamesosu.utils.http;
 
+import mames1.net.mamesosu.utils.log.AppLogger;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,7 +27,10 @@ public abstract class CheckStatusClient {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int status = response.statusCode();
-            return status >= 200 && status < 300;
+
+            AppLogger.log("Checked URL: " + url + " | Status Code: " + status, mames1.net.mamesosu.constants.LogLevel.DEBUG);
+
+            return status >= 200 && status <= 302;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;

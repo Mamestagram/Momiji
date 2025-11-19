@@ -8,6 +8,7 @@ import mames1.net.mamesosu.constants.RankEmoji;
 import mames1.net.mamesosu.object.Score;
 import mames1.net.mamesosu.utils.GameMode;
 import mames1.net.mamesosu.utils.Mods;
+import mames1.net.mamesosu.utils.RateLimit;
 import mames1.net.mamesosu.utils.log.AppLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,9 +31,10 @@ public class TopScoreMonitor extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e) {
 
         long latestId;
-        TextChannel logChannel;
+        TextChannel postChannel;
         Message latestMessage;
         EmbedBuilder scoreEmbed = new EmbedBuilder();
+        Calendar now = Calendar.getInstance();
 
         if(!e.getChannelType().isGuild()) {
             return;
@@ -42,18 +44,20 @@ public class TopScoreMonitor extends ListenerAdapter {
             return;
         }
 
-        Calendar now = Calendar.getInstance();
-
-        if(latestSendTime != 0) {
-            if(Math.abs(now.get(Calendar.SECOND) - latestSendTime) < 30) {
-                return;
-            }
+        if(!RateLimit.checkNotExceeded(latestSendTime, now.get(Calendar.SECOND))) {
+            return;
         }
-        latestSendTime = now.get(Calendar.SECOND);
 
-        logChannel = e.getChannel().asTextChannel();
-        latestId = logChannel.getLatestMessageIdLong();
-        latestMessage = logChannel.retrieveMessageById(latestId).complete();
+        latestSendTime = now.get(Calendar.SECOND);
+        postChannel = e.getJDA().getTextChannelById(Channel.TOPPLAYS_POST.getId());
+
+        if(postChannel == null) {
+            AppLogger.log("指定されたチャンネルIDのテキストチャンネルが見つかりません: " + Channel.SERVER_LOG.getId(), LogLevel.WARN);
+            return;
+        }
+
+        latestId = postChannel.getLatestMessageIdLong();
+        latestMessage = postChannel.retrieveMessageById(latestId).complete();
         isFirstRun = !(latestMessage.getAuthor().getIdLong() == e.getJDA().getSelfUser().getIdLong());
 
         scoreEmbed.setTitle("**<:ranking:1286182419455545396> Mamestagram Top Plays**", "https://web.mamesosu.net/leaderboard/std/performance");
@@ -76,7 +80,7 @@ public class TopScoreMonitor extends ListenerAdapter {
         }
 
         if(isFirstRun) {
-            logChannel.sendMessageEmbeds(scoreEmbed.build()).queue();
+            postChannel.sendMessageEmbeds(scoreEmbed.build()).queue();
             isFirstRun = false;
 
             AppLogger.log("トップスコアを送信しました.", LogLevel.INFO);

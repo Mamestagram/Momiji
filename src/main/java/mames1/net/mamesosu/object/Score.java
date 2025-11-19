@@ -18,7 +18,7 @@ public class Score {
 
     public String userName;
     public int userId;
-    public int country;
+    public String country;
 
 
     public Score getTopScoreFromUserId(int mode) {
@@ -38,18 +38,18 @@ public class Score {
 
             if(result.next()) {
                 topScore.pp = result.getDouble("pp");
-                topScore.mods = result.getLong("mods");
+                topScore.mods = result.getInt("mods");
                 topScore.grade = result.getString("s.grade");
                 topScore.score = result.getLong("s.score");
 
-                topScore.beatmap.beatmapId = result.getLong("m.id");
-                topScore.beatmap.beatmapSetId = result.getLong("m.set_id");
+                topScore.beatmap.beatmapId = result.getInt("m.id");
+                topScore.beatmap.beatmapSetId = result.getInt("m.set_id");
                 topScore.beatmap.artist = result.getString("m.artist");
                 topScore.beatmap.title = result.getString("m.title");
                 topScore.beatmap.version = result.getString("m.version");
 
                 topScore.userName = result.getString("u.name");
-                topScore.country = result.getInt("u.country");
+                topScore.country = result.getString("u.country");
 
                 return topScore;
             }
@@ -57,7 +57,7 @@ public class Score {
             AppLogger.log("トップスコアの取得に失敗しました: " + e.getMessage(), LogLevel.ERROR);
         }
 
-        AppLogger.log("指定されたユーザーIDのトップスコアが見つかりません: " + this.userId, LogLevel.WARN);
+        AppLogger.log("指定されたユーザーModeのトップスコアが見つかりません: " + this.userId, LogLevel.WARN);
 
         return null;
     }
