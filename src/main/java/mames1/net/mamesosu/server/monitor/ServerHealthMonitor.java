@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 // サーバーのヘルスモニタリングを行うクラス
 // ダウンしてたらDiscordのボイスチャンネル名を変更と管理者に通知する
-public class ServerHealth {
+public class ServerHealthMonitor {
 
     public void startMonitoring() {
 
@@ -68,6 +68,8 @@ public class ServerHealth {
                         }
 
                         channel.getManager().setName(name.replace("Up", "Down")).queue();
+
+                        AppLogger.log(endpoint + " is Down!!", LogLevel.WARN);
                     }
                     } catch (Exception e) {
                         AppLogger.log(e.getMessage(), LogLevel.ERROR);
