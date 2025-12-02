@@ -3,7 +3,7 @@ package mames1.net.mamesosu.discord.monitor;
 import mames1.net.mamesosu.Main;
 import mames1.net.mamesosu.constants.LogLevel;
 import mames1.net.mamesosu.constants.ServerRole;
-import mames1.net.mamesosu.object.ApprovalBot;
+import mames1.net.mamesosu.object.model.ApprovalBot;
 import mames1.net.mamesosu.object.Cache;
 import mames1.net.mamesosu.utils.log.AppLogger;
 import net.dv8tion.jda.api.EmbedBuilder;

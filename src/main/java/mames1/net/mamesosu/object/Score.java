@@ -1,6 +1,7 @@
 package mames1.net.mamesosu.object;
 
 import mames1.net.mamesosu.constants.LogLevel;
+import mames1.net.mamesosu.object.model.Beatmap;
 import mames1.net.mamesosu.utils.log.AppLogger;
 
 import java.sql.Connection;

@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.object;
+package mames1.net.mamesosu.object.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,9 @@ public class ApprovalBot {
     List<Message> awaitingApprovalMessages;
 
     public ApprovalBot () {
+        // 承認待ちのBot
         botMember = null;
+        // ユーザーに送信した承認待ちメッセージのリスト
         awaitingApprovalMessages = new ArrayList<>();
     }
 }

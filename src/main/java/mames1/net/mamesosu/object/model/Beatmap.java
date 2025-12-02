@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.object;
+package mames1.net.mamesosu.object.model;
 
 public class Beatmap {
 
