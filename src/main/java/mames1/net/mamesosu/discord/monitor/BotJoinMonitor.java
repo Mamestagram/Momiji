@@ -21,7 +21,7 @@ import java.util.List;
 
 public class BotJoinMonitor extends ListenerAdapter {
 
-    // 管理者権限を持っているBot以外のBotが参加した場合キックする (自作Bot以外の参加を防止)
+    // 新規Bot参加監視
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent e) {
 
