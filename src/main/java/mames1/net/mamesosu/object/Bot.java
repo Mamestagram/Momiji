@@ -3,6 +3,8 @@ package mames1.net.mamesosu.object;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import mames1.net.mamesosu.constants.LogLevel;
+import mames1.net.mamesosu.discord.monitor.BotJoinMonitor;
+import mames1.net.mamesosu.discord.monitor.InviteCreateMonitor;
 import mames1.net.mamesosu.listener.BotReady;
 import mames1.net.mamesosu.server.monitor.ActivePlayerMonitor;
 import mames1.net.mamesosu.server.monitor.TopScoreMonitor;
@@ -49,8 +51,12 @@ public class Bot {
                         ChunkingFilter.ALL
                 ).addEventListeners(
                         new BotReady(),
+                        // Server
                         new TopScoreMonitor(),
-                        new ActivePlayerMonitor()
+                        new ActivePlayerMonitor(),
+                        // Discord
+                        new BotJoinMonitor(),
+                        new InviteCreateMonitor()
                 ).build();
 
         AppLogger.log("Botを起動しました. トークンは: " + token, LogLevel.INFO);
