@@ -3,6 +3,7 @@ package mames1.net.mamesosu.object;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import mames1.net.mamesosu.constants.LogLevel;
+import mames1.net.mamesosu.discord.RoleAssignment;
 import mames1.net.mamesosu.discord.monitor.BoostMonitor;
 import mames1.net.mamesosu.discord.monitor.BotJoinMonitor;
 import mames1.net.mamesosu.discord.monitor.InviteCreateMonitor;
@@ -60,7 +61,8 @@ public class Bot {
                         new BotJoinMonitor(),
                         new InviteCreateMonitor(),
                         new BoostMonitor(),
-                        new MessageBanchoSender()
+                        new MessageBanchoSender(),
+                        new RoleAssignment()
                 ).build();
 
         AppLogger.log("Botを起動しました. トークンは: " + token, LogLevel.INFO);
