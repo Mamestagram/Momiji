@@ -7,6 +7,7 @@ import mames1.net.mamesosu.discord.RoleAssignment;
 import mames1.net.mamesosu.discord.monitor.BoostMonitor;
 import mames1.net.mamesosu.discord.monitor.BotJoinMonitor;
 import mames1.net.mamesosu.discord.monitor.InviteCreateMonitor;
+import mames1.net.mamesosu.discord.monitor.MessageUrlMonitor;
 import mames1.net.mamesosu.discord.sender.MessageBanchoSender;
 import mames1.net.mamesosu.listener.BotReady;
 import mames1.net.mamesosu.server.monitor.ActivePlayerMonitor;
@@ -24,11 +25,13 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 public class Bot {
 
     JDA jda;
+    String virusKey;
 
     public Bot() {
         Dotenv dotenv = Dotenv.configure().load();
 
         String token = dotenv.get("BOT_TOKEN");
+        virusKey = dotenv.get("VIRUS_KEY");
 
         this.jda = JDABuilder.createDefault(token)
                 .setRawEventsEnabled(true)
@@ -62,7 +65,8 @@ public class Bot {
                         new InviteCreateMonitor(),
                         new BoostMonitor(),
                         new MessageBanchoSender(),
-                        new RoleAssignment()
+                        new RoleAssignment(),
+                        new MessageUrlMonitor()
                 ).build();
 
         AppLogger.log("Botを起動しました. トークンは: " + token, LogLevel.INFO);

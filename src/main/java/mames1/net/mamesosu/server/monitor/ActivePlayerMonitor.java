@@ -10,12 +10,17 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class ActivePlayerMonitor extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
         JsonNode node;
+        URL url;
+        HttpURLConnection conn;
         int activePlayers;
 
         if(!e.getChannelType().isGuild()) {
@@ -27,8 +32,10 @@ public class ActivePlayerMonitor extends ListenerAdapter {
         }
 
         try {
+            url = new URL(Endpoint.BANCHO.getUrl());
+            conn = (HttpURLConnection) url.openConnection();
 
-            node = JsonHttpClient.getJsonNode(Endpoint.BANCHO.getUrl());
+            node = JsonHttpClient.getJsonNode(conn);
 
             if(node == null) {
                 e.getJDA().getPresence().setActivity(Activity.watching("Server looks down.."));
@@ -40,6 +47,8 @@ public class ActivePlayerMonitor extends ListenerAdapter {
             e.getJDA().getPresence().setActivity(Activity.watching("Active players: " + activePlayers));
 
             AppLogger.log("プレイヤー人数を更新しました: " + activePlayers, LogLevel.INFO);
+
+            conn.disconnect();
 
         } catch (Exception ex) {
             AppLogger.log("エラーが発生しました: " + ex.getMessage(), LogLevel.ERROR);

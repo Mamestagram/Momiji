@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 
 
 @SuppressWarnings("unused")
@@ -18,7 +16,6 @@ public abstract class JsonHttpClient {
     public static JsonNode getJsonNode(HttpURLConnection con) throws IOException {
 
         try {
-            con.setRequestMethod("GET");
             con.setConnectTimeout(5000);
             con.setReadTimeout(5000);
 

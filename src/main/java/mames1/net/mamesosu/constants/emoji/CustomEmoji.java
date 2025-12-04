@@ -7,7 +7,8 @@ public enum CustomEmoji {
 
     INFO("<:info:1285954858998042694>"),
     PEOPLEGROUP("<:peoplegroup:1285955898124140575>"),
-    SCREEN("<:screencast:1286261681974018122>");
+    SCREEN("<:screencast:1286261681974018122>"),
+    WARNING("<:warning:1285853296833335366>");
 
     final String id;
 
