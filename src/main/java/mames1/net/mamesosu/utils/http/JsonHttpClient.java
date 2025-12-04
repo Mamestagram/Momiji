@@ -6,16 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 
 @SuppressWarnings("unused")
 public abstract class JsonHttpClient {
 
-    public static JsonNode getJsonNode(String endpoint) throws IOException {
-        URL obj = new URL(endpoint);
 
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+    public static JsonNode getJsonNode(HttpURLConnection con) throws IOException {
 
         try {
             con.setRequestMethod("GET");

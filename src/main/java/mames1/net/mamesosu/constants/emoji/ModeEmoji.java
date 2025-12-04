@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.constants;
+package mames1.net.mamesosu.constants.emoji;
 
 import lombok.Getter;
 

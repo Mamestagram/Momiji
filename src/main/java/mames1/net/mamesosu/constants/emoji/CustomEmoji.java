@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.constants;
+package mames1.net.mamesosu.constants.emoji;
 
 import lombok.Getter;
 
@@ -9,7 +9,7 @@ public enum CustomEmoji {
     PEOPLEGROUP("<:peoplegroup:1285955898124140575>"),
     SCREEN("<:screencast:1286261681974018122>");
 
-    public final String id;
+    final String id;
 
     CustomEmoji(String id) {
         this.id = id;

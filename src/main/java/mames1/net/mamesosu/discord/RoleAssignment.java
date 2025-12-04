@@ -1,8 +1,8 @@
 package mames1.net.mamesosu.discord;
 
 import mames1.net.mamesosu.constants.Channel;
-import mames1.net.mamesosu.constants.CustomEmoji;
-import mames1.net.mamesosu.constants.ModeEmoji;
+import mames1.net.mamesosu.constants.emoji.CustomEmoji;
+import mames1.net.mamesosu.constants.emoji.ModeEmoji;
 import mames1.net.mamesosu.constants.ServerRole;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

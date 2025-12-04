@@ -3,8 +3,8 @@ package mames1.net.mamesosu.server.monitor;
 
 import mames1.net.mamesosu.constants.Channel;
 import mames1.net.mamesosu.constants.LogLevel;
-import mames1.net.mamesosu.constants.ModeEmoji;
-import mames1.net.mamesosu.constants.RankEmoji;
+import mames1.net.mamesosu.constants.emoji.ModeEmoji;
+import mames1.net.mamesosu.constants.emoji.RankEmoji;
 import mames1.net.mamesosu.object.Score;
 import mames1.net.mamesosu.utils.GameMode;
 import mames1.net.mamesosu.utils.Mods;
