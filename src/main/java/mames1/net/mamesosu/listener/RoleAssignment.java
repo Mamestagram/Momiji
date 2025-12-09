@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.discord;
+package mames1.net.mamesosu.listener;
 
 import mames1.net.mamesosu.constants.Channel;
 import mames1.net.mamesosu.constants.emoji.CustomEmoji;

@@ -1,4 +1,4 @@
-package mames1.net.mamesosu.discord.sender;
+package mames1.net.mamesosu.discord.bancho;
 
 import mames1.net.mamesosu.constants.Channel;
 import mames1.net.mamesosu.constants.LogLevel;
