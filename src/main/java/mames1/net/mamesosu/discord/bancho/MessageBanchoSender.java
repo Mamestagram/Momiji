@@ -45,6 +45,8 @@ public class MessageBanchoSender extends ListenerAdapter {
 
         if (e.getMember() == null) return;
 
+        if(!e.getMessage().getEmbeds().isEmpty()) return;
+
         // メッセージからURLと絵文字を除去 -> UTF-8エンコード
         message = URLEncoder.encode(removeUnsupportedString(e.getMessage().getContentRaw()), StandardCharsets.UTF_8);
         userName = URLEncoder.encode(e.getMember().getEffectiveName(), StandardCharsets.UTF_8);

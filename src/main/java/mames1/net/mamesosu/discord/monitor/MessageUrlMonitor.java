@@ -165,7 +165,7 @@ public class MessageUrlMonitor extends ListenerAdapter {
         String url;
         String apiKey = Main.bot.getVirusKey();
 
-        checkEmbed.setTitle(CustomEmoji.WARNING.getId() + " There may be a security issue!");
+        checkEmbed.setTitle(CustomEmoji.WARNING.getId() + " **There may be a security issue!**");
         checkEmbed.setDescription("This message may contain a URL that could be unsafe. Please proceed at your own risk if you choose to access the link.");
         checkEmbed.addField("Content", messageContent, false);
         checkEmbed.setColor(Color.RED);
