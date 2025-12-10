@@ -10,10 +10,10 @@ import java.net.HttpURLConnection;
 
 
 @SuppressWarnings("unused")
-public abstract class JsonHttpClient {
+public interface JsonHttpClient {
 
 
-    public static JsonNode getJsonNode(HttpURLConnection con) throws IOException {
+    default JsonNode getJsonNode(HttpURLConnection con) throws IOException {
 
         try {
             con.setConnectTimeout(5000);

@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public abstract class Date {
+public interface Date {
 
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static String now() {
+    static String now() {
         return LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(FMT);
     }
 }

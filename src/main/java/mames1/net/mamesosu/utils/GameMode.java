@@ -1,8 +1,8 @@
 package mames1.net.mamesosu.utils;
 
-public abstract class GameMode {
+public interface GameMode {
 
-    public static String getModeToString (int mode) {
+    default String getModeToString (int mode) {
         switch (mode) {
             case 0 -> {
                 return "vn!std";

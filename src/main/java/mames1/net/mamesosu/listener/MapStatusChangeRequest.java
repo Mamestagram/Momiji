@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapStatusChangeRequest extends ListenerAdapter {
+public class MapStatusChangeRequest extends ListenerAdapter implements InputField {
 
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent e) {
@@ -31,7 +31,7 @@ public class MapStatusChangeRequest extends ListenerAdapter {
             return;
         }
 
-        mapInput = InputField.createTextInput(
+        mapInput = createTextInput(
                 "map_url", "Beatmap URL", "Please enter the beatmap URL.", true, TextInputStyle.SHORT
         );
 

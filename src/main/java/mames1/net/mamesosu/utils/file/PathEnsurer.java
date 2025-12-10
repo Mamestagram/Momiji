@@ -6,9 +6,9 @@ import mames1.net.mamesosu.utils.log.AppLogger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class PathEnsurer {
+public interface PathEnsurer {
 
-    public static boolean ensureDirectory (Path dir) {
+    static boolean ensureDirectory (Path dir) {
 
         try {
             if (Files.notExists(dir)) {

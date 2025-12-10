@@ -7,14 +7,11 @@ import mames1.net.mamesosu.constants.LogLevel;
 import mames1.net.mamesosu.constants.ServerRole;
 import mames1.net.mamesosu.object.Bot;
 import mames1.net.mamesosu.utils.http.CheckStatusClient;
-import mames1.net.mamesosu.utils.log.AppLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.ContextException;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.awt.*;
 import java.util.Date;
@@ -24,9 +21,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static mames1.net.mamesosu.utils.log.AppLogger.log;
+
 // サーバーのヘルスモニタリングを行うクラス
 // ダウンしてたらDiscordのボイスチャンネル名を変更と管理者に通知する
-public class ServerHealthMonitor {
+public class ServerHealthMonitor implements CheckStatusClient {
 
     public void startMonitoring() {
 
@@ -49,15 +48,15 @@ public class ServerHealthMonitor {
                         VoiceChannel channel = bot.getJda().getVoiceChannelById(channelId);
                         Role role = bot.getJda().getRoleById(ServerRole.FRONTEND_DEV.getId());
 
-                        boolean isUp = CheckStatusClient.checkStatus(endpoint);
+                        boolean isUp = checkStatus(endpoint);
 
                         if(channel == null) {
-                            AppLogger.log("指定されたチャンネルIDのボイスチャンネルが見つかりません: " + channelId, LogLevel.WARN);
+                            log("指定されたチャンネルIDのボイスチャンネルが見つかりません: " + channelId, LogLevel.WARN);
                             continue;
                         }
 
                         if (role == null) {
-                            AppLogger.log("指定されたロールIDのロールが見つかりません: " + ServerRole.FRONTEND_DEV.getId(), LogLevel.WARN);
+                            log("指定されたロールIDのロールが見つかりません: " + ServerRole.FRONTEND_DEV.getId(), LogLevel.WARN);
                             continue;
                         }
 
@@ -88,17 +87,17 @@ public class ServerHealthMonitor {
                             }
 
                                 member.getUser().openPrivateChannel().queue(pc -> pc.sendMessageEmbeds(notificationEmbed.build()).queue(
-                                        success -> AppLogger.log("管理者 " + member.getUser().getAsTag() + " にDMで通知を送信しました.", LogLevel.INFO),
-                                        failure -> AppLogger.log("管理者 " + member.getUser().getAsTag() + " へのDM通知の送信に失敗しました: " + failure.getMessage(), LogLevel.INFO
+                                        success -> log("管理者 " + member.getUser().getAsTag() + " にDMで通知を送信しました.", LogLevel.INFO),
+                                        failure -> log("管理者 " + member.getUser().getAsTag() + " へのDM通知の送信に失敗しました: " + failure.getMessage(), LogLevel.INFO
                                 )));
                         }
 
                         channel.getManager().setName(name.replace("Up", "Down")).queue();
 
-                        AppLogger.log(endpoint + " is Down!!", LogLevel.WARN);
+                        log(endpoint + " is Down!!", LogLevel.WARN);
                     }
                     } catch (Exception e) {
-                        AppLogger.log("エラーが発生しました: " + e.getMessage(), LogLevel.ERROR);
+                        log("エラーが発生しました: " + e.getMessage(), LogLevel.ERROR);
                     }
                 },
                 0,

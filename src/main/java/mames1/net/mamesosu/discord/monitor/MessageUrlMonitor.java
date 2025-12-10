@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MessageUrlMonitor extends ListenerAdapter {
+public class MessageUrlMonitor extends ListenerAdapter implements JsonHttpClient {
 
     private static void getRequestProperty(HttpURLConnection conn, String apiKey) throws IOException {
 
@@ -35,14 +35,14 @@ public class MessageUrlMonitor extends ListenerAdapter {
         conn.setDoOutput(true);
     }
 
-    private static JsonNode getUrlAnalysis(UrlAnalysis urlAnalysis) throws IOException {
+    private JsonNode getUrlAnalysis(UrlAnalysis urlAnalysis) throws IOException {
 
         final URL analyzeUrl = new URL("https://www.virustotal.com/api/v3/analyses/" + urlAnalysis.id);
         JsonNode resultNode;
 
         HttpURLConnection conn = (HttpURLConnection) analyzeUrl.openConnection();
         getRequestProperty(conn, urlAnalysis.apiKey);
-        resultNode = JsonHttpClient.getJsonNode(conn);
+        resultNode = getJsonNode(conn);
 
         if (resultNode == null) {
             return null;
@@ -59,7 +59,7 @@ public class MessageUrlMonitor extends ListenerAdapter {
         return resultNode.get("data").get("attributes");
     }
 
-    private static CompletableFuture<JsonNode> getUrlAnalysisAsync(UrlAnalysis urlAnalysis) {
+    private CompletableFuture<JsonNode> getUrlAnalysisAsync(UrlAnalysis urlAnalysis) {
 
         return CompletableFuture.supplyAsync(
                 () -> {
@@ -101,7 +101,7 @@ public class MessageUrlMonitor extends ListenerAdapter {
             os.write(input, 0, input.length);
         }
 
-        resultNode = JsonHttpClient.getJsonNode(conn);
+        resultNode = getJsonNode(conn);
 
         if(resultNode == null) {
             return false;

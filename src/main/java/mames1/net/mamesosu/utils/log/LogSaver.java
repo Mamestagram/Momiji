@@ -9,9 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public abstract class LogSaver {
+public interface LogSaver {
 
-    public static void save(String message, LogLevel level) {
+    static void save(String message, LogLevel level) {
 
         if(PathEnsurer.ensureDirectory(Path.of("logs"))) {
 

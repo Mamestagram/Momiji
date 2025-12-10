@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ActivePlayerMonitor extends ListenerAdapter {
+public class ActivePlayerMonitor extends ListenerAdapter implements JsonHttpClient {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
@@ -35,7 +35,7 @@ public class ActivePlayerMonitor extends ListenerAdapter {
             url = new URL(Endpoint.BANCHO.getUrl());
             conn = (HttpURLConnection) url.openConnection();
 
-            node = JsonHttpClient.getJsonNode(conn);
+            node = getJsonNode(conn);
 
             if(node == null) {
                 e.getJDA().getPresence().setActivity(Activity.watching("Server looks down.."));

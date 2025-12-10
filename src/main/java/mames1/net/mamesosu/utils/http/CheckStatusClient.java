@@ -9,9 +9,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public abstract class CheckStatusClient {
+public interface CheckStatusClient {
 
-    public static boolean checkStatus(String url) {
+    default boolean checkStatus(String url) {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(5))

@@ -22,7 +22,7 @@ import java.util.Date;
 
 // トップスコアを監視するクラス
 // スコアを受信する度にDiscordの特定チャンネルのメッセージを更新する
-public class TopScoreMonitor extends ListenerAdapter {
+public class TopScoreMonitor extends ListenerAdapter implements RateLimit, Mods, GameMode {
 
     int latestSendTime = 0;
 
@@ -44,7 +44,7 @@ public class TopScoreMonitor extends ListenerAdapter {
             return;
         }
 
-        if(!RateLimit.checkNotExceeded(latestSendTime, now.get(Calendar.SECOND))) {
+        if(!checkNotExceeded(latestSendTime, now.get(Calendar.SECOND))) {
             return;
         }
 
@@ -71,8 +71,8 @@ public class TopScoreMonitor extends ListenerAdapter {
             score = score.getTopScoreFromUserId(i);
 
             scoreEmbed.addField("**" + ModeEmoji.getModeEmojiByMode(i) + " " +
-                    GameMode.getModeToString(i) + "** :flag_" + score.country + ": **" + score.userName + " (" + String.format("%.2f", score.pp) + "pp)**",
-                    "* [" + score.beatmap.getFullName() + "](https://web.mamesosu.net/beatmaps/" + score.beatmap.beatmapSetId + "/" + score.beatmap.beatmapId + ") +" + Mods.getModsToString((int) score.mods) + "\n" +
+                    getModeToString(i) + "** :flag_" + score.country + ": **" + score.userName + " (" + String.format("%.2f", score.pp) + "pp)**",
+                    "* [" + score.beatmap.getFullName() + "](https://web.mamesosu.net/beatmaps/" + score.beatmap.beatmapSetId + "/" + score.beatmap.beatmapId + ") +" + getModsToString((int) score.mods) + "\n" +
                     "* " + RankEmoji.getRankEmojiByRank(score.grade) + " **" + String.format("%,d", score.score) + "score**", false);
 
             scoreEmbed.setColor(Color.BLACK);

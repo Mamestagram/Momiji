@@ -3,9 +3,9 @@ package mames1.net.mamesosu.utils.log;
 import mames1.net.mamesosu.constants.LogLevel;
 import mames1.net.mamesosu.utils.Date;
 
-public abstract class AppLogger {
+public interface AppLogger  {
 
-    public static void log(String message, LogLevel level) {
+    static void log(String message, LogLevel level) {
 
         String log = Date.now() + " [Momiji] [" + level + "] " + message;
 

@@ -6,9 +6,9 @@ import mames1.net.mamesosu.utils.log.AppLogger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class FileEnsurer {
+public interface FileEnsurer  {
 
-    public static boolean ensureFile (Path file) {
+   static boolean ensureFile (Path file) {
 
         try {
             Path parent = file.getParent();
