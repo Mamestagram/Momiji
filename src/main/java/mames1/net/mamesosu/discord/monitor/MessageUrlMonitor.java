@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class MessageUrlMonitor extends ListenerAdapter implements JsonHttpClient {
 
-    private static void getRequestProperty(HttpURLConnection conn, String apiKey) throws IOException {
+    private void getRequestProperty(HttpURLConnection conn, String apiKey) throws IOException {
 
         conn.setRequestMethod("GET");
         conn.setRequestProperty("accept", "application/json");
