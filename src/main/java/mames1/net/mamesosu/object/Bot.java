@@ -26,12 +26,14 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 public class Bot {
 
     JDA jda;
+    String banchoKey;
     String virusKey;
 
     public Bot() {
         Dotenv dotenv = Dotenv.configure().load();
 
         String token = dotenv.get("BOT_TOKEN");
+        banchoKey = dotenv.get("BANCHO_KEY");
         virusKey = dotenv.get("VIRUS_KEY");
 
         this.jda = JDABuilder.createDefault(token)
