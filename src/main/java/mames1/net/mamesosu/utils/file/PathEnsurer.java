@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 public interface PathEnsurer {
 
+
     static boolean ensureDirectory (Path dir) {
 
         try {

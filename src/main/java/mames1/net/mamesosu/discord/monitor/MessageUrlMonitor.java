@@ -2,6 +2,7 @@ package mames1.net.mamesosu.discord.monitor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import mames1.net.mamesosu.Main;
+import mames1.net.mamesosu.constants.Channel;
 import mames1.net.mamesosu.constants.LogLevel;
 import mames1.net.mamesosu.constants.emoji.CustomEmoji;
 import mames1.net.mamesosu.constants.emoji.UnicodeEmoji;
@@ -171,6 +172,22 @@ public class MessageUrlMonitor extends ListenerAdapter implements JsonHttpClient
         checkEmbed.setColor(Color.RED);
 
         if(e.getJDA().getSelfUser() == e.getAuthor()) {
+            return;
+        }
+
+        if(e.getChannel().getIdLong() == Channel.REQ_OSU.getId()) {
+            return;
+        }
+
+        if (e.getChannel().getIdLong() == Channel.REQ_TAIKO.getId()) {
+            return;
+        }
+
+        if (e.getChannel().getIdLong() == Channel.REQ_CTB.getId()) {
+            return;
+        }
+
+        if (e.getChannel().getIdLong() == Channel.REQ_MANIA.getId()) {
             return;
         }
 

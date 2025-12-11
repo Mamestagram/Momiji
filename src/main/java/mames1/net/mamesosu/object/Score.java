@@ -29,8 +29,6 @@ public class Score {
         PreparedStatement ps;
         ResultSet result;
 
-        topScore.beatmap = new Beatmap();
-
         try {
 
             ps = connection.prepareStatement("SELECT s.status, s.id AS scoreid, s.userid, s.acc, s.pp, s.score, s.mods, s.grade, m.set_id, m.id, m.title, m.artist, m.version, u.country, u.name FROM scores s force index (idx_scores_mode_status_pp) JOIN users u ON u.id = s.userid JOIN maps m ON m.md5 = s.map_md5 WHERE s.mode = ? AND (u.priv & 1) = 1 AND m.status IN (2, 3) AND s.status = 2 ORDER BY s.pp DESC LIMIT 1");
@@ -38,17 +36,19 @@ public class Score {
             result = ps.executeQuery();
 
             if(result.next()) {
+
+                topScore.beatmap = new Beatmap(
+                        result.getString("m.title"),
+                        result.getString("m.artist"),
+                        result.getString("m.version"),
+                        result.getLong("m.id"),
+                        result.getLong("m.set_id")
+                );
+
                 topScore.pp = result.getDouble("pp");
                 topScore.mods = result.getInt("mods");
                 topScore.grade = result.getString("s.grade");
                 topScore.score = result.getLong("s.score");
-
-                topScore.beatmap.beatmapId = result.getInt("m.id");
-                topScore.beatmap.beatmapSetId = result.getInt("m.set_id");
-                topScore.beatmap.artist = result.getString("m.artist");
-                topScore.beatmap.title = result.getString("m.title");
-                topScore.beatmap.version = result.getString("m.version");
-
                 topScore.userName = result.getString("u.name");
                 topScore.country = result.getString("u.country");
 
