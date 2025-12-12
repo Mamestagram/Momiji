@@ -13,11 +13,15 @@ public class BanchoBeatmapset {
     }
 
     public boolean isNotSpeedDiffBeatmapset() {
+        int tmpNormalCount;
 
-        int tmpNormalCount = beatmaps.get(0).countNormal;
+        if(beatmaps.size() < 2) {
+            return true;
+        }
+
+        tmpNormalCount = beatmaps.get(0).countNormal;
 
         for (int i = 1; i < beatmaps.size(); i++) {
-
             if (tmpNormalCount != beatmaps.get(i).countNormal) {
                 return false;
             }
@@ -27,7 +31,6 @@ public class BanchoBeatmapset {
     }
 
     public boolean isAcceptedMapSet() {
-
         for (BanchoBeatmap b : beatmaps) {
             if(b.isNotAcceptedMap()) {
                 return false;
@@ -56,17 +59,17 @@ public class BanchoBeatmapset {
             sb.append("\n");
         };
 
-        row.accept("hitLength",     b -> b.hitLength);
-        row.accept("diffRating",    b -> b.difficultyRating);
-        row.accept("aimRating",     b -> b.aimRating);
-        row.accept("speedRating",   b -> b.speedRating);
+        row.accept("HitLength",     b -> b.hitLength);
+        row.accept("DiffRating",    b -> b.difficultyRating);
+        row.accept("AimRating",     b -> b.aimRating);
+        row.accept("SpeedRating",   b -> b.speedRating);
         row.accept("CS",            b -> b.cs);
         row.accept("OD",            b -> b.od);
         row.accept("AR",            b -> b.ar);
         row.accept("HP",            b -> b.hp);
-        row.accept("maxCombo",      b -> b.maxCombo);
-        row.accept("countNormal",   b -> b.countNormal);
-        row.accept("countSlider",   b -> b.countSlider);
+        row.accept("MaxCombo",      b -> b.maxCombo);
+        row.accept("CountNormal",   b -> b.countNormal);
+        row.accept("CountSlider",   b -> b.countSlider);
 
         return sb.toString();
     }
