@@ -9,6 +9,7 @@ import mames1.net.mamesosu.constants.emoji.CustomEmoji;
 import mames1.net.mamesosu.object.model.BanchoBeatmap;
 import mames1.net.mamesosu.object.model.BanchoBeatmapset;
 import mames1.net.mamesosu.object.model.MapRequest;
+import mames1.net.mamesosu.utils.Render;
 import mames1.net.mamesosu.utils.http.JsonHttpClient;
 import mames1.net.mamesosu.utils.log.AppLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -17,10 +18,16 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +35,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
+public class NewRequestSender extends ListenerAdapter implements JsonHttpClient, Render {
 
     private EmbedBuilder getErrorEmbed(String reason) {
         EmbedBuilder errorEmbed = new EmbedBuilder();
@@ -73,7 +80,12 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
                         beatmap.get("beatmapset_id").asLong(),
                         beatmap.get("approved").asInt(),
                         beatmap.get("hit_length").asInt(),
+                        beatmap.get("difficultyrating").asDouble(),
+                        beatmap.get("diff_aim").asDouble(),
+                        beatmap.get("diff_speed").asDouble(),
                         beatmap.get("diff_size").asDouble(),
+                        beatmap.get("diff_overall").asDouble(),
+                        beatmap.get("diff_approach").asDouble(),
                         beatmap.get("diff_drain").asDouble(),
                         beatmap.get("max_combo").asInt(),
                         beatmap.get("count_normal").asInt(),
@@ -178,6 +190,7 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
 
                 // メンションを送る先のロールを取得
                 bnRole = getRoleByMode(mapRequest.mode);
+
                 if(getRequestChannelIdByMode(mapRequest.mode) == -1 || bnRole == null) {
                     e.replyEmbeds(
                             getErrorEmbed("Invalid game mode specified.").build()
@@ -187,6 +200,7 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
 
                 // モード別のBNチャンネルを取得 (メッセージを送る先)
                 bnChannel = e.getGuild().getTextChannelById(getRequestChannelIdByMode(mapRequest.mode));
+
                 if (bnChannel == null) {
                     e.replyEmbeds(
                             getErrorEmbed("Failed to access the request channel. Please contact the staff.").build()
@@ -196,6 +210,7 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
 
                 // マップセット全体の情報をBanchoから取得
                 beatmapset = getBeatmapset(mapRequest.beatmapsetId);
+
                 if (beatmapset == null) {
                     e.replyEmbeds(
                             getErrorEmbed("Failed to retrieve beatmap information from osu! API. Please ensure the URL is correct.").build()
@@ -203,45 +218,69 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient{
                     return;
                 }
 
-                // もし「all」が選択されていたら、速度が変更されている差分とRanked基準を満たしていないマップが含まれているか検証
-                if(e.getModalId().contains("all")) {
-                    if(!beatmapset.isNotSpeedDiffBeatmapset()) {
-                        e.replyEmbeds(
-                                getErrorEmbed("Ranked status for beatmaps with speed-altered difficulties is not allowed by the rules.\n" +
-                                        "Only one normal-speed difficulty can be Ranked in a beatmapset.").build()
-                        ).setEphemeral(true).queue();
-
-                        return;
-                    }
-
-                    if (!beatmapset.isAcceptedMapSet()) {
-                        e.replyEmbeds(
-                                getErrorEmbed(
-                                        "The map you requested does not meet the Ranked criteria.\n" +
-                                                "Please check the Ranked requirements and submit the map again once it meets them."
-                                ).build()
-                        ).setEphemeral(true).queue();
-                        return;
-                    }
+                // 指定されたビートマップID以外のビートマップを削除 (単体のリクエストの場合)
+                if(!e.getModalId().contains("all")) {
+                    beatmapset.beatmaps.removeIf(b -> b.beatmapId != mapRequest.beatmapId);
                 }
 
-                // 単体Diffリクエストの場合、該当DiffがRanked基準を満たしているか検証
-                if(beatmapset.beatmaps.stream().noneMatch(b -> b.beatmapId == mapRequest.beatmapId && b.isNotAcceptedMap())) {
+                // ビートマップがランキング基準を満たしているか確認 #1
+                if(!beatmapset.isNotSpeedDiffBeatmapset()) {
+                    e.replyEmbeds(
+                            getErrorEmbed("Ranked status for beatmaps with speed-altered difficulties is not allowed by the rules.\n" +
+                                    "Only one normal-speed difficulty can be Ranked in a beatmapset.").build()
+                    ).setEphemeral(true).queue();
+                    return;
+                }
+
+                // ビートマップがランキング基準を満たしているか確認 #2
+                if (!beatmapset.isAcceptedMapSet()) {
                     e.replyEmbeds(
                             getErrorEmbed(
-                                    "The selected difficulty does not meet the Ranked criteria.\n" +
+                                    "The map you requested does not meet the Ranked criteria.\n" +
                                             "Please check the Ranked requirements and submit the map again once it meets them."
                             ).build()
                     ).setEphemeral(true).queue();
-                    //return;
+                    return;
                 }
 
-                // WIP:
-            }
+                // BNチャンネルにリクエスト通知を送信
+                responseEmbed.setTitle(CustomEmoji.WARNING.getId() + " **A new request has arrived!**");
+                responseEmbed.setDescription("A new Ranked request for a map has been submitted.\n" +
+                        "Please review the map listed below and make sure to either approve or deny it within 24 hours.");
 
+                responseEmbed.addField("Beatmap", "**[" + beatmapset.beatmaps.get(0).getFullName() + "]" +
+                                "(https://osu.ppy.sh/beatmapsets/" + mapRequest.beatmapsetId + "#" + mapRequest.mode + "/" + mapRequest.beatmapId + ")**",
+                        false);
+
+                String beatmapTableText = beatmapset.buildBeatmapsetsTable();
+                BufferedImage image = renderTextToImage(beatmapTableText);
+                Path tmp = Files.createTempFile("beatmap_table_", ".png");
+
+                try (OutputStream os = Files.newOutputStream(tmp)) {
+                    javax.imageio.ImageIO.write(image, "png", os);
+                }
+
+                File file = tmp.toFile();
+
+                bnChannel.sendMessageEmbeds(responseEmbed.build())
+                        .addFiles(
+                                FileUpload.fromData(file, "beatmap_table.png")
+                        ).queue(
+                                success -> {
+                                    boolean flg = file.delete();
+                                },
+                                failure -> {
+                                    boolean flg = file.delete();
+                                }
+                        );
+            }
 
         } catch (Exception ex) {
             AppLogger.log(ex.getLocalizedMessage(), LogLevel.ERROR);
+
+            e.replyEmbeds(
+                    getErrorEmbed("An unexpected error occurred while processing the request. Please contact the developer.").build()
+            ).setEphemeral(true).queue();
         }
 
     }

@@ -1,6 +1,8 @@
 package mames1.net.mamesosu.object.model;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class BanchoBeatmapset {
 
@@ -33,5 +35,39 @@ public class BanchoBeatmapset {
         }
 
         return true;
+    }
+
+
+    public String buildBeatmapsetsTable() {
+        StringBuilder sb = new StringBuilder();
+
+        // ヘッダー行(難易度名)
+        sb.append(String.format("%-18s", "項目"));
+        for (BanchoBeatmap b : beatmaps) {
+            sb.append(String.format("%-14s", b.version)); // 難易度名など
+        }
+        sb.append("\n");
+
+        BiConsumer<String, Function<BanchoBeatmap, Object>> row = (label, getter) -> {
+            sb.append(String.format("%-18s", label));
+            for (BanchoBeatmap b : beatmaps) {
+                sb.append(String.format("%-14s", getter.apply(b)));
+            }
+            sb.append("\n");
+        };
+
+        row.accept("hitLength",     b -> b.hitLength);
+        row.accept("diffRating",    b -> b.difficultyRating);
+        row.accept("aimRating",     b -> b.aimRating);
+        row.accept("speedRating",   b -> b.speedRating);
+        row.accept("CS",            b -> b.cs);
+        row.accept("OD",            b -> b.od);
+        row.accept("AR",            b -> b.ar);
+        row.accept("HP",            b -> b.hp);
+        row.accept("maxCombo",      b -> b.maxCombo);
+        row.accept("countNormal",   b -> b.countNormal);
+        row.accept("countSlider",   b -> b.countSlider);
+
+        return sb.toString();
     }
 }

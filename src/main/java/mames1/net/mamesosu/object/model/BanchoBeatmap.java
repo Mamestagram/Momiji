@@ -5,7 +5,12 @@ public class BanchoBeatmap extends Beatmap {
     public int approved;
     public long hitLength;
     public double difficultyRating;
-    public double diffDrain;
+    public double aimRating;
+    public double speedRating;
+    public double cs;
+    public double od;
+    public double ar;
+    public double hp;
     public double maxCombo;
     public int countNormal;
     public int countSlider;
@@ -19,7 +24,12 @@ public class BanchoBeatmap extends Beatmap {
             int approved,
             long hitLength,
             double difficultyRating,
-            double diffDrain,
+            double aimRating,
+            double speedRating,
+            double cs,
+            double od,
+            double ar,
+            double hp,
             double maxCombo,
             int countNormal,
             int countSlider
@@ -30,13 +40,18 @@ public class BanchoBeatmap extends Beatmap {
         this.approved = approved;
         this.hitLength = hitLength;
         this.difficultyRating = difficultyRating;
-        this.diffDrain = diffDrain;
+        this.aimRating = aimRating;
+        this.speedRating = speedRating;
+        this.cs = cs;
+        this.od = od;
+        this.ar = ar;
+        this.hp = hp;
         this.maxCombo = maxCombo;
         this.countNormal = countNormal;
         this.countSlider = countSlider;
     }
 
     public boolean isNotAcceptedMap() {
-        return !(hitLength >= 30 && (approved == -2 || approved >= 1) && diffDrain > 1);
+        return !(hitLength >= 30 && (approved == -2 || approved >= 1) && od > 1);
     }
 }
