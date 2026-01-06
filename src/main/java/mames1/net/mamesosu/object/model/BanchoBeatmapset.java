@@ -41,7 +41,7 @@ public class BanchoBeatmapset {
     }
 
 
-    public String buildBeatmapsetsTable() {
+    public String buildBeatmapsetTable() {
         StringBuilder sb = new StringBuilder();
 
         // ヘッダー行(難易度名)

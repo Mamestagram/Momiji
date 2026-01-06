@@ -252,7 +252,7 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
                                 "(https://osu.ppy.sh/beatmapsets/" + mapRequest.beatmapsetId + "#" + mapRequest.mode + "/" + mapRequest.beatmapId + ")**",
                         false);
 
-                String beatmapTableText = beatmapset.buildBeatmapsetsTable();
+                String beatmapTableText = beatmapset.buildBeatmapsetTable();
                 BufferedImage image = renderTextToImage(beatmapTableText);
                 Path tmp = Files.createTempFile("beatmap_table_", ".png");
 
