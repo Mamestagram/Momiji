@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.imageio.ImageIO;
@@ -197,9 +198,6 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
 
                 if(!e.getModalId().contains("all")) {
                     beatmapset.beatmaps.removeIf(b -> b.beatmapId != mapRequest.beatmapId);
-                    responseEmbed.setFooter(String.valueOf(beatmapset.beatmaps.get(0).beatmapId));
-                } else {
-                    responseEmbed.setFooter(String.valueOf(beatmapset.beatmaps.get(0).beatmapSetId));
                 }
 
                 if(beatmapset.isNotSpeedDiffBeatmapset()) {
@@ -240,7 +238,11 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
                 bnChannel.sendMessageEmbeds(responseEmbed.build())
                         .addFiles(
                                 FileUpload.fromData(file, "beatmap_stats.png")
-                        ).queue(
+                        ).addActionRow(
+                                Button.success("btn_accept_" + mapRequest.beatmapsetId + "_" + mapRequest.beatmapId, "Accept"),
+                                Button.danger("btn_reject_" + mapRequest.beatmapsetId + "_" + mapRequest.beatmapId, "Reject")
+                        )
+                        .queue(
                                 success -> {
                                     boolean flg = file.delete();
                                 },
