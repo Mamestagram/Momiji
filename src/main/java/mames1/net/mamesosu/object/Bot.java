@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import mames1.net.mamesosu.constants.LogLevel;
 import mames1.net.mamesosu.discord.nominate.NewRequestSender;
+import mames1.net.mamesosu.discord.nominate.RequestFormSender;
 import mames1.net.mamesosu.listener.RoleAssignment;
 import mames1.net.mamesosu.discord.monitor.BoostMonitor;
 import mames1.net.mamesosu.discord.monitor.BotJoinMonitor;
@@ -72,7 +73,8 @@ public class Bot {
                         new RoleAssignment(),
                         new MessageUrlMonitor(),
                         new MapStatusChangeRequest(),
-                        new NewRequestSender()
+                        new NewRequestSender(),
+                        new RequestFormSender()
                 ).build();
 
         AppLogger.log("Botを起動しました. トークンは: " + token, LogLevel.INFO);

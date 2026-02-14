@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.FileUpload;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -37,19 +38,19 @@ import java.util.regex.Pattern;
 
 public class NewRequestSender extends ListenerAdapter implements JsonHttpClient, Render {
 
+    // ... (既存の getErrorEmbed, getBeatmapset, getRoleByMode, getRequestChannelIdByMode メソッドは変更なし) ...
     private EmbedBuilder getErrorEmbed(String reason) {
         EmbedBuilder errorEmbed = new EmbedBuilder();
-
         errorEmbed.setTitle(CustomEmoji.WARNING.getId() + " **Error**");
         errorEmbed.setDescription("An error occurred while processing the request. If this issue persists, please contact the developer.");
         errorEmbed.addField("Reason", reason, false);
         errorEmbed.setColor(Color.red);
         errorEmbed.setTimestamp(new Date().toInstant());
-
         return errorEmbed;
     }
 
     private BanchoBeatmapset getBeatmapset(int beatmapsetId) {
+        // ... (省略: 元のコードと同じ) ...
         String banchoEndpoint = "https://osu.ppy.sh/api/get_beatmaps";
         JsonNode mapData;
         HttpURLConnection urlConnection;
@@ -103,49 +104,29 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
     }
 
     private Role getRoleByMode(String mode) {
-
+        // ... (省略: 元のコードと同じ) ...
         JDA jda = Main.bot.getJda();
-
         switch (mode) {
-            case "osu" -> {
-                return jda.getRoleById(ServerRole.BN_OSU.getId());
-            }
-            case "taiko" -> {
-                return jda.getRoleById(ServerRole.BN_TAIKO.getId());
-            }
-            case "fruits" -> {
-                return jda.getRoleById(ServerRole.BN_CATCH.getId());
-            }
-            case "mania" -> {
-                return jda.getRoleById(ServerRole.BN_MANIA.getId());
-            }
-            default -> {
-                return null;
-            }
+            case "osu" -> { return jda.getRoleById(ServerRole.BN_OSU.getId()); }
+            case "taiko" -> { return jda.getRoleById(ServerRole.BN_TAIKO.getId()); }
+            case "fruits" -> { return jda.getRoleById(ServerRole.BN_CATCH.getId()); }
+            case "mania" -> { return jda.getRoleById(ServerRole.BN_MANIA.getId()); }
+            default -> { return null; }
         }
     }
 
     private long getRequestChannelIdByMode(String mode) {
+        // ... (省略: 元のコードと同じ) ...
         switch (mode) {
-            case "osu" -> {
-                return Channel.REQ_OSU.getId();
-            }
-            case "taiko" -> {
-                return Channel.REQ_TAIKO.getId();
-            }
-            case "fruits" -> {
-                return Channel.REQ_CTB.getId();
-            }
-            case "mania" -> {
-                return Channel.REQ_MANIA.getId();
-            }
-            default -> {
-                return -1;
-            }
+            case "osu" -> { return Channel.REQ_OSU.getId(); }
+            case "taiko" -> { return Channel.REQ_TAIKO.getId(); }
+            case "fruits" -> { return Channel.REQ_CTB.getId(); }
+            case "mania" -> { return Channel.REQ_MANIA.getId(); }
+            default -> { return -1; }
         }
     }
 
-    // フォームに入力されたリクエストを処理する
+
     @SuppressWarnings("unused")
     @Override
     public void onModalInteraction(ModalInteractionEvent e) {
@@ -159,25 +140,12 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
         MapRequest mapRequest;
         BanchoBeatmapset beatmapset;
 
-        if(e.getGuild() == null) {
-            return;
-        }
-
-        if(!e.getModalId().contains("ranked")) {
-            return;
-        }
-
-        if(e.getValues().isEmpty()) {
-            return;
-        }
-
-        if(e.getValue("map_url") == null) {
+        // ... (バリデーション部分は既存のコードと同じ) ...
+        if(e.getGuild() == null || !e.getModalId().contains("ranked") || e.getValues().isEmpty() || e.getValue("map_url") == null) {
             return;
         }
 
         try {
-
-            // URLが正しい形式か確認
             matcher = pattern.matcher((Objects.requireNonNull(e.getValue("map_url")).getAsString()));
 
             if(matcher.find()) {
@@ -188,83 +156,65 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
                         e.getMember()
                 );
 
-                // メンションを送る先のロールを取得
                 bnRole = getRoleByMode(mapRequest.mode);
 
                 if(getRequestChannelIdByMode(mapRequest.mode) == -1 || bnRole == null) {
-                    e.replyEmbeds(
-                            getErrorEmbed("Invalid game mode specified.").build()
-                    ).setEphemeral(true).queue();
+                    e.replyEmbeds(getErrorEmbed("Invalid game mode specified.").build()).setEphemeral(true).queue();
                     return;
                 }
 
-                // モード別のBNチャンネルを取得 (メッセージを送る先)
                 bnChannel = e.getGuild().getTextChannelById(getRequestChannelIdByMode(mapRequest.mode));
-
                 if (bnChannel == null) {
-                    e.replyEmbeds(
-                            getErrorEmbed("Failed to access the request channel. Please contact the staff.").build()
-                    ).setEphemeral(true).queue();
+                    e.replyEmbeds(getErrorEmbed("Failed to access the request channel.").build()).setEphemeral(true).queue();
                     return;
                 }
 
-                // マップセット全体の情報をBanchoから取得
                 beatmapset = getBeatmapset(mapRequest.beatmapsetId);
-
                 if (beatmapset == null) {
-                    e.replyEmbeds(
-                            getErrorEmbed("Failed to retrieve beatmap information from osu! API. Please ensure the URL is correct.").build()
-                    ).setEphemeral(true).queue();
+                    e.replyEmbeds(getErrorEmbed("Failed to retrieve beatmap information.").build()).setEphemeral(true).queue();
                     return;
                 }
 
-                // 指定されたビートマップID以外のビートマップを削除 (単体のリクエストの場合)
                 if(!e.getModalId().contains("all")) {
                     beatmapset.beatmaps.removeIf(b -> b.beatmapId != mapRequest.beatmapId);
                 }
 
-                // ビートマップがランキング基準を満たしているか確認 #1
-                if(!beatmapset.isNotSpeedDiffBeatmapset()) {
-                    e.replyEmbeds(
-                            getErrorEmbed("Ranked status for beatmaps with speed-altered difficulties is not allowed by the rules.\n" +
-                                    "Only one normal-speed difficulty can be Ranked in a beatmapset.").build()
-                    ).setEphemeral(true).queue();
+                if(beatmapset.isNotSpeedDiffBeatmapset()) {
+                    e.replyEmbeds(getErrorEmbed("Ranked status for beatmaps with speed-altered difficulties is not allowed.").build()).setEphemeral(true).queue();
                     return;
                 }
 
-                // ビートマップがランキング基準を満たしているか確認 #2
                 if (!beatmapset.isAcceptedMapSet()) {
-                    e.replyEmbeds(
-                            getErrorEmbed(
-                                    "The map you requested does not meet the Ranked criteria.\n" +
-                                            "Please check the Ranked requirements and submit the map again once it meets them."
-                            ).build()
-                    ).setEphemeral(true).queue();
+                    e.replyEmbeds(getErrorEmbed("The map you requested does not meet the Ranked criteria.").build()).setEphemeral(true).queue();
                     return;
                 }
 
                 // BNチャンネルにリクエスト通知を送信
                 responseEmbed.setTitle(CustomEmoji.WARNING.getId() + " **A new request has arrived!**");
                 responseEmbed.setDescription("A new Ranked request for a map has been submitted.\n" +
-                        "Please review the map listed below and make sure to either approve or deny it within 24 hours.");
+                        "Please review the map listed below.");
 
                 responseEmbed.addField("Beatmap", "**[" + beatmapset.beatmaps.get(0).getFullName() + "]" +
                                 "(https://osu.ppy.sh/beatmapsets/" + mapRequest.beatmapsetId + "#" + mapRequest.mode + "/" + mapRequest.beatmapId + ")**",
                         false);
 
-                String beatmapTableText = beatmapset.buildBeatmapsetTable();
-                BufferedImage image = renderTextToImage(beatmapTableText);
-                Path tmp = Files.createTempFile("beatmap_table_", ".png");
+                // 画像添付としてチャートを設定
+                responseEmbed.setImage("attachment://beatmap_stats.png");
+                responseEmbed.setColor(new Color(255, 102, 170)); // osu! pinkish color
+
+                // **ここを変更: 綺麗なチャート（画像）を生成**
+                BufferedImage image = beatmapset.createBeatmapInfoImage();
+                Path tmp = Files.createTempFile("beatmap_stats_", ".png");
 
                 try (OutputStream os = Files.newOutputStream(tmp)) {
-                    javax.imageio.ImageIO.write(image, "png", os);
+                    ImageIO.write(image, "png", os);
                 }
 
                 File file = tmp.toFile();
 
                 bnChannel.sendMessageEmbeds(responseEmbed.build())
                         .addFiles(
-                                FileUpload.fromData(file, "beatmap_table.png")
+                                FileUpload.fromData(file, "beatmap_stats.png")
                         ).queue(
                                 success -> {
                                     boolean flg = file.delete();
@@ -273,15 +223,16 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
                                     boolean flg = file.delete();
                                 }
                         );
+
+                // ユーザーへの完了報告
+                e.reply("Request sent successfully!").setEphemeral(true).queue();
             }
 
         } catch (Exception ex) {
             AppLogger.log(ex.getLocalizedMessage(), LogLevel.ERROR);
-
             e.replyEmbeds(
-                    getErrorEmbed("An unexpected error occurred while processing the request. Please contact the developer.").build()
+                    getErrorEmbed("An unexpected error occurred.").build()
             ).setEphemeral(true).queue();
         }
-
     }
 }
