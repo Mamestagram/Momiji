@@ -126,6 +126,26 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
         }
     }
 
+    private Color getRequestColor(String status) {
+        switch (status) {
+            case "all_ranked_form" -> {
+                return Color.GREEN;
+            }
+            case "all_deranked_form" -> {
+                return Color.RED;
+            }
+            case "diff_ranked_form" -> {
+                return Color.YELLOW;
+            }
+            case "diff_deranked_form" -> {
+                return Color.ORANGE;
+            }
+            default -> {
+                return Color.GRAY;
+            }
+        }
+    }
+
 
     @SuppressWarnings("unused")
     @Override
@@ -177,6 +197,9 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
 
                 if(!e.getModalId().contains("all")) {
                     beatmapset.beatmaps.removeIf(b -> b.beatmapId != mapRequest.beatmapId);
+                    responseEmbed.setFooter(String.valueOf(beatmapset.beatmaps.get(0).beatmapId));
+                } else {
+                    responseEmbed.setFooter(String.valueOf(beatmapset.beatmaps.get(0).beatmapSetId));
                 }
 
                 if(beatmapset.isNotSpeedDiffBeatmapset()) {
@@ -191,16 +214,18 @@ public class NewRequestSender extends ListenerAdapter implements JsonHttpClient,
 
                 // BNチャンネルにリクエスト通知を送信
                 responseEmbed.setTitle(CustomEmoji.WARNING.getId() + " **A new request has arrived!**");
-                responseEmbed.setDescription("A new Ranked request for a map has been submitted.\n" +
+                responseEmbed.setDescription("A new " + (e.getModalId().contains("deranked") ? "DeRanked" : "Ranked") + " request for a map has been submitted.\n" +
                         "Please review the map listed below.");
 
                 responseEmbed.addField("Beatmap", "**[" + beatmapset.beatmaps.get(0).getFullName() + "]" +
                                 "(https://osu.ppy.sh/beatmapsets/" + mapRequest.beatmapsetId + "#" + mapRequest.mode + "/" + mapRequest.beatmapId + ")**",
                         false);
 
+                responseEmbed.addField("Requested by", e.getUser().getAsMention(), false);
+
                 // 画像添付としてチャートを設定
                 responseEmbed.setImage("attachment://beatmap_stats.png");
-                responseEmbed.setColor(new Color(255, 102, 170)); // osu! pinkish color
+                responseEmbed.setColor(getRequestColor(e.getModalId()));
 
                 // **ここを変更: 綺麗なチャート（画像）を生成**
                 BufferedImage image = beatmapset.createBeatmapInfoImage();
