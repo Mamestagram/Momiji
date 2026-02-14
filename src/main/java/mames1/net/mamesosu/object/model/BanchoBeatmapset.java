@@ -17,7 +17,7 @@ public class BanchoBeatmapset {
         int tmpNormalCount;
 
         if (beatmaps.size() < 2) {
-            return true;
+            return false;
         }
 
         tmpNormalCount = beatmaps.get(0).countNormal;
